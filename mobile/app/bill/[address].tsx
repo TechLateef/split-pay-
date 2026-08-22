@@ -115,7 +115,13 @@ export default function BillDetailScreen() {
         <View style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => router.back()}
+            onPress={() => {
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/(tabs)');
+              }
+            }}
             style={styles.headerBtn}
           >
             <ArrowLeft size={20} color={colors.textPrimary} />

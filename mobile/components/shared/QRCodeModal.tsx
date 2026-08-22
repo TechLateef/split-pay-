@@ -13,7 +13,7 @@ import { AppButton } from '../ui/AppButton';
 import { AddressBadge } from '../ui/AddressBadge';
 import { useUIStore } from '../../store/uiStore';
 import * as Clipboard from 'expo-clipboard';
-import * as Haptics from 'expo-haptics';
+import { safeHaptics } from '../../lib/haptics';
 import { X, QrCode, Share2, Copy, Zap } from 'lucide-react-native';
 
 export function QRCodeModal() {
@@ -26,7 +26,7 @@ export function QRCodeModal() {
   const handleCopyLink = async () => {
     try {
       await Clipboard.setStringAsync(deepLink);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      safeHaptics.light();
       showToast({
         title: 'Deep Link Copied!',
         message: deepLink,

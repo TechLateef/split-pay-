@@ -14,7 +14,7 @@ import { BlockieAvatar } from '../ui/BlockieAvatar';
 import { formatAddress, formatUSD } from '../../lib/format';
 import { DEMO_ACCOUNTS } from '../../store/walletStore';
 import * as Clipboard from 'expo-clipboard';
-import * as Haptics from 'expo-haptics';
+import { safeHaptics } from '../../lib/haptics';
 import { ethers } from 'ethers';
 import { Plus, X, Clipboard as ClipboardIcon, Users, Sparkles } from 'lucide-react-native';
 import { useUIStore } from '../../store/uiStore';
@@ -70,9 +70,7 @@ export function StepTwo({
       return;
     }
 
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch {}
+    safeHaptics.light();
 
     setParticipants([...participants, raw]);
     setAddressInput('');
@@ -80,9 +78,7 @@ export function StepTwo({
   };
 
   const handleRemove = (index: number) => {
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch {}
+    safeHaptics.light();
     setParticipants(participants.filter((_, i) => i !== index));
   };
 

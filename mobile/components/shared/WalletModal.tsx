@@ -18,7 +18,7 @@ import { useWallet } from '../../hooks/useWallet';
 import { useUIStore } from '../../store/uiStore';
 import { formatAddress } from '../../lib/format';
 import * as Clipboard from 'expo-clipboard';
-import * as Haptics from 'expo-haptics';
+import { safeHaptics } from '../../lib/haptics';
 import { X, Wallet, Key, Check, Sparkles, Plus, Copy, Eye, EyeOff } from 'lucide-react-native';
 
 export function WalletModal() {
@@ -74,7 +74,7 @@ export function WalletModal() {
   const handleCopyAddress = async () => {
     if (!address) return;
     await Clipboard.setStringAsync(address);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    safeHaptics.light();
     showToast({
       title: 'Address Copied!',
       message: address,
@@ -85,7 +85,7 @@ export function WalletModal() {
   const handleCopyPrivateKey = async () => {
     if (!privateKey) return;
     await Clipboard.setStringAsync(privateKey);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    safeHaptics.warning();
     showToast({
       title: 'Private Key Copied!',
       message: 'Keep this private key safe and do not share publicly.',
