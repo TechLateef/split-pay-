@@ -125,3 +125,8 @@ Press `w` to open in Web Browser, `a` for Android Emulator, or scan the QR code 
 - **RPC URL**: `https://testnet-rpc.monad.xyz`
 - **Explorer**: `https://testnet.monadexplorer.com`
 - **Faucet**: `https://testnet.monad.xyz`
+
+
+
+
+TxHash: https://testnet.monadvision.com/tx/0x008cb3af0505ab0976fbff4b885fe431f98ba9235592f31b85bf0880634b7bd5
