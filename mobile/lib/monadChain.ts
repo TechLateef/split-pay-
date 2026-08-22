@@ -1,18 +1,18 @@
 export const MONAD_TESTNET = {
-  id: 10143,
-  name: 'Monad Testnet',
-  network: 'monad-testnet',
+  id: 31337,
+  name: 'Local Hardhat',
+  network: 'localhost',
   nativeCurrency: {
-    name: 'Monad',
-    symbol: 'MON',
+    name: 'Ethereum',
+    symbol: 'ETH',
     decimals: 18,
   },
   rpcUrls: {
     default: {
-      http: ['https://testnet-rpc.monad.xyz'],
+      http: ['http://localhost:8545'],
     },
     public: {
-      http: ['https://testnet-rpc.monad.xyz'],
+      http: ['http://localhost:8545'],
     },
   },
   blockExplorers: {

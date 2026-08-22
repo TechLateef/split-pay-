@@ -69,6 +69,7 @@ interface WalletState {
   refreshBalance: () => Promise<void>;
   initializeWallet: () => Promise<void>;
   switchAccount: (accountId: string) => Promise<void>;
+  getSigner: () => ethers.Wallet | null;
 }
 
 export const useWalletStore = create<WalletState>((set, get) => ({
@@ -80,6 +81,12 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   isConnecting: false,
   walletType: null,
   activePersona: null,
+
+  getSigner: () => {
+    const pk = get().privateKey;
+    if (!pk) return null;
+    return new ethers.Wallet(pk, getProvider());
+  },
 
   initializeWallet: async () => {
     try {

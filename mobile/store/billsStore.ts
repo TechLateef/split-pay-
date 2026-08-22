@@ -1,6 +1,10 @@
 import { create } from 'zustand';
-import { QUICK_TEST_ACCOUNTS } from './walletStore';
+import { ethers } from 'ethers';
+import { QUICK_TEST_ACCOUNTS, useWalletStore } from './walletStore';
 import { getItem, setItem } from '../lib/storage';
+import SplitFactory from '../contracts/SplitFactory.json';
+import SplitBill from '../contracts/SplitBill.json';
+import deployed from '../contracts/deployed.json';
 
 export type BillStatus = 'Open' | 'Settled' | 'Cancelled' | 'Expired';
 
@@ -166,20 +170,40 @@ export const useBillsStore = create<BillsState>((set, get) => ({
     deadlineHours = 0,
   }) => {
     set({ isCreating: true });
+    try {
+      const signer = useWalletStore.getState().getSigner();
+      if (!signer) throw new Error("Wallet not connected");
 
-    // Generate smart contract simulated/real EVM address
-    const randomHex = Array.from({ length: 40 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('');
-    const newAddress = `0x${randomHex}`;
-    const txHash = `0x${Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`;
+      const factory = new ethers.Contract(deployed.factoryAddress, SplitFactory.abi, signer);
+      const totalParticipants = totalParticipantsCount || (participantAddresses.length + 1);
+      const totalAmountMON = (parseFloat(splitAmountMON) * totalParticipants).toFixed(2);
+      const now = Math.floor(Date.now() / 1000);
+      const deadline = deadlineHours > 0 ? now + deadlineHours * 3600 : 0;
+      const splitAmountWei = ethers.parseEther(splitAmountMON);
 
-    const totalParticipants = totalParticipantsCount || (participantAddresses.length + 1);
-    const totalAmountMON = (parseFloat(splitAmountMON) * totalParticipants).toFixed(2);
-    const now = Math.floor(Date.now() / 1000);
-    const deadline = deadlineHours > 0 ? now + deadlineHours * 3600 : 0;
+      const tx = await factory.createBillWithCount(
+        title,
+        description,
+        participantAddresses,
+        totalParticipants,
+        splitAmountWei,
+        deadlineHours,
+        { value: splitAmountWei }
+      );
+      const receipt = await tx.wait();
+      
+      const event = receipt.logs
+        .map((log: any) => {
+          try {
+             return factory.interface.parseLog(log);
+          } catch (e) { return null; }
+        })
+        .find((e: any) => e?.name === 'BillCreated');
+        
+      if (!event) throw new Error("Failed to parse BillCreated event");
+      
+      const newAddress = event.args.billAddress;
+      const txHash = receipt.hash;
 
     const matchedCreator = QUICK_TEST_ACCOUNTS.find(
       (a) => a.address.toLowerCase() === creatorAddress.toLowerCase()
@@ -238,9 +262,6 @@ export const useBillsStore = create<BillsState>((set, get) => ({
       ],
     };
 
-    // Monad 0.6s block time
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
     const updatedBills = {
       [newAddress.toLowerCase()]: newBill,
       ...get().bills,
@@ -255,22 +276,33 @@ export const useBillsStore = create<BillsState>((set, get) => ({
       await setItem('splitpay_saved_bills', JSON.stringify(updatedBills));
     } catch {}
 
+    // Refresh wallet balance since gas & share was paid
+    useWalletStore.getState().refreshBalance();
+
     return newAddress;
+  } catch (err) {
+    set({ isCreating: false });
+    throw err;
+  }
   },
 
   payShare: async (billAddress: string, participantAddress: string) => {
-    const txHash = `0x${Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`;
-    const now = Math.floor(Date.now() / 1000);
-
-    // Monad 0.6s instant confirmation
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    const signer = useWalletStore.getState().getSigner();
+    if (!signer) throw new Error("Wallet not connected");
 
     const key = billAddress.toLowerCase();
     const currentBills = get().bills;
     const bill = currentBills[key] || get().getBill(billAddress);
-    if (!bill) return txHash;
+    if (!bill) throw new Error("Bill not found");
+
+    const contract = new ethers.Contract(billAddress, SplitBill.abi, signer);
+    const amountWei = ethers.parseEther(bill.splitAmountMON);
+    
+    const tx = await contract.pay({ value: amountWei });
+    const receipt = await tx.wait();
+    
+    const txHash = receipt.hash;
+    const now = Math.floor(Date.now() / 1000);
 
     const matchedSender = QUICK_TEST_ACCOUNTS.find(
       (a) => a.address.toLowerCase() === participantAddress.toLowerCase()
@@ -360,17 +392,21 @@ export const useBillsStore = create<BillsState>((set, get) => ({
   },
 
   withdrawSettledFunds: async (billAddress: string, creatorAddress: string) => {
-    const txHash = `0x${Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`;
-    const now = Math.floor(Date.now() / 1000);
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    const signer = useWalletStore.getState().getSigner();
+    if (!signer) throw new Error("Wallet not connected");
 
     const key = billAddress.toLowerCase();
     const currentBills = get().bills;
     const bill = currentBills[key] || get().getBill(billAddress);
-    if (!bill) return txHash;
+    if (!bill) throw new Error("Bill not found");
+
+    const contract = new ethers.Contract(billAddress, SplitBill.abi, signer);
+    
+    const tx = await contract.withdrawSettled();
+    const receipt = await tx.wait();
+    
+    const txHash = receipt.hash;
+    const now = Math.floor(Date.now() / 1000);
 
     const updatedBill: BillDetail = {
       ...bill,
@@ -404,17 +440,21 @@ export const useBillsStore = create<BillsState>((set, get) => ({
   },
 
   cancelBill: async (billAddress: string, creatorAddress: string) => {
-    const txHash = `0x${Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`;
-    const now = Math.floor(Date.now() / 1000);
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    const signer = useWalletStore.getState().getSigner();
+    if (!signer) throw new Error("Wallet not connected");
 
     const key = billAddress.toLowerCase();
     const currentBills = get().bills;
     const bill = currentBills[key] || get().getBill(billAddress);
-    if (!bill) return txHash;
+    if (!bill) throw new Error("Bill not found");
+
+    const contract = new ethers.Contract(billAddress, SplitBill.abi, signer);
+    
+    const tx = await contract.cancelBill();
+    const receipt = await tx.wait();
+    
+    const txHash = receipt.hash;
+    const now = Math.floor(Date.now() / 1000);
 
     const updatedBill: BillDetail = {
       ...bill,
@@ -447,17 +487,21 @@ export const useBillsStore = create<BillsState>((set, get) => ({
   },
 
   claimRefund: async (billAddress: string, participantAddress: string) => {
-    const txHash = `0x${Array.from({ length: 64 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('')}`;
-    const now = Math.floor(Date.now() / 1000);
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    const signer = useWalletStore.getState().getSigner();
+    if (!signer) throw new Error("Wallet not connected");
 
     const key = billAddress.toLowerCase();
     const currentBills = get().bills;
     const bill = currentBills[key] || get().getBill(billAddress);
-    if (!bill) return txHash;
+    if (!bill) throw new Error("Bill not found");
+
+    const contract = new ethers.Contract(billAddress, SplitBill.abi, signer);
+    
+    const tx = await contract.claimRefund();
+    const receipt = await tx.wait();
+    
+    const txHash = receipt.hash;
+    const now = Math.floor(Date.now() / 1000);
 
     const matchedSender = QUICK_TEST_ACCOUNTS.find(
       (a) => a.address.toLowerCase() === participantAddress.toLowerCase()

@@ -1,594 +1,579 @@
 {
   "abi": [
     {
+      "type": "constructor",
+      "stateMutability": "undefined",
+      "payable": false,
       "inputs": [
         {
-          "internalType": "string",
-          "name": "_billTitle",
-          "type": "string"
+          "type": "string",
+          "name": "_billTitle"
         },
         {
-          "internalType": "string",
-          "name": "_billDescription",
-          "type": "string"
+          "type": "string",
+          "name": "_billDescription"
         },
         {
-          "internalType": "address",
-          "name": "_creator",
-          "type": "address"
+          "type": "address",
+          "name": "_creator"
         },
         {
-          "internalType": "address[]",
-          "name": "_participants",
-          "type": "address[]"
+          "type": "address[]",
+          "name": "_participants"
         },
         {
-          "internalType": "uint256",
-          "name": "_totalParticipants",
-          "type": "uint256"
+          "type": "uint256",
+          "name": "_totalParticipants"
         },
         {
-          "internalType": "uint256",
-          "name": "_splitAmount",
-          "type": "uint256"
+          "type": "uint256",
+          "name": "_splitAmount"
         },
         {
-          "internalType": "uint256",
-          "name": "_deadlineInHours",
-          "type": "uint256"
+          "type": "uint256",
+          "name": "_deadlineInHours"
         }
-      ],
-      "stateMutability": "payable",
-      "type": "constructor"
+      ]
     },
     {
-      "inputs": [],
+      "type": "error",
       "name": "ReentrancyGuardReentrantCall",
-      "type": "error"
+      "inputs": []
     },
     {
+      "type": "event",
       "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "creator",
-          "type": "address"
-        }
-      ],
       "name": "BillCancelled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
+          "type": "address",
           "name": "creator",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "title",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "totalAmount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "participantCount",
-          "type": "uint256"
+          "indexed": true
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "BillCreated",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "timestamp",
-          "type": "uint256"
+          "type": "address",
+          "name": "creator",
+          "indexed": true
+        },
+        {
+          "type": "string",
+          "name": "title",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "totalAmount",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "participantCount",
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "BillExpired",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "creator",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "totalCollected",
-          "type": "uint256"
+          "type": "uint256",
+          "name": "timestamp",
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "BillSettled",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
+          "type": "address",
           "name": "creator",
-          "type": "address"
+          "indexed": true
         },
         {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
+          "type": "uint256",
+          "name": "totalCollected",
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "CreatorWithdrew",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
-          "name": "participant",
-          "type": "address"
+          "type": "address",
+          "name": "creator",
+          "indexed": true
         },
         {
-          "indexed": false,
-          "internalType": "uint256",
+          "type": "uint256",
           "name": "amount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "paidCount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "remaining",
-          "type": "uint256"
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "ParticipantPaid",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
       "inputs": [
         {
-          "indexed": true,
-          "internalType": "address",
+          "type": "address",
           "name": "participant",
-          "type": "address"
+          "indexed": true
         },
         {
-          "indexed": false,
-          "internalType": "uint256",
+          "type": "uint256",
           "name": "amount",
-          "type": "uint256"
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "paidCount",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "remaining",
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "event",
+      "anonymous": false,
       "name": "RefundClaimed",
-      "type": "event"
-    },
-    {
-      "inputs": [],
-      "name": "billDescription",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "billTitle",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "cancelBill",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "claimRefund",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "createdAt",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "creator",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "creatorWithdrawn",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "deadline",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "expireBill",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "factory",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getDetails",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "_creator",
-          "type": "address"
-        },
-        {
-          "internalType": "string",
-          "name": "_billTitle",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_billDescription",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_totalAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_splitAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_createdAt",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_deadline",
-          "type": "uint256"
-        },
-        {
-          "internalType": "enum SplitBill.Status",
-          "name": "_status",
-          "type": "uint8"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_paidCount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_totalParticipants",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_totalCollected",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bool",
-          "name": "_creatorWithdrawn",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
-          "internalType": "address",
+          "type": "address",
           "name": "participant",
-          "type": "address"
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "amount",
+          "indexed": false
         }
-      ],
+      ]
+    },
+    {
+      "type": "function",
+      "name": "billDescription",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "string",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "billTitle",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "string",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "cancelBill",
+      "constant": false,
+      "payable": false,
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "claimRefund",
+      "constant": false,
+      "payable": false,
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "createdAt",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "creator",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "address",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "creatorWithdrawn",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "bool",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "deadline",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "expireBill",
+      "constant": false,
+      "payable": false,
+      "inputs": [],
+      "outputs": []
+    },
+    {
+      "type": "function",
+      "name": "factory",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "address",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "getDetails",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "address",
+          "name": "_creator"
+        },
+        {
+          "type": "string",
+          "name": "_billTitle"
+        },
+        {
+          "type": "string",
+          "name": "_billDescription"
+        },
+        {
+          "type": "uint256",
+          "name": "_totalAmount"
+        },
+        {
+          "type": "uint256",
+          "name": "_splitAmount"
+        },
+        {
+          "type": "uint256",
+          "name": "_createdAt"
+        },
+        {
+          "type": "uint256",
+          "name": "_deadline"
+        },
+        {
+          "type": "uint8",
+          "name": "_status"
+        },
+        {
+          "type": "uint256",
+          "name": "_paidCount"
+        },
+        {
+          "type": "uint256",
+          "name": "_totalParticipants"
+        },
+        {
+          "type": "uint256",
+          "name": "_totalCollected"
+        },
+        {
+          "type": "bool",
+          "name": "_creatorWithdrawn"
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "getParticipantStatus",
-      "outputs": [
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
         {
-          "internalType": "bool",
-          "name": "isMember",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "hasPaid",
-          "type": "bool"
-        },
-        {
-          "internalType": "bool",
-          "name": "refunded",
-          "type": "bool"
+          "type": "address",
+          "name": "participant"
         }
       ],
-      "stateMutability": "view",
-      "type": "function"
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "isMember"
+        },
+        {
+          "type": "bool",
+          "name": "hasPaid"
+        },
+        {
+          "type": "bool",
+          "name": "refunded"
+        }
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "getParticipants",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "address[]",
-          "name": "_participants",
-          "type": "address[]"
+          "type": "address[]",
+          "name": "_participants"
         },
         {
-          "internalType": "bool[]",
-          "name": "_paidStatuses",
-          "type": "bool[]"
+          "type": "bool[]",
+          "name": "_paidStatuses"
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
+      "type": "function",
       "name": "hasClaimedRefund",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
+      "constant": true,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
+      "payable": false,
       "inputs": [
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+          "type": "address",
+          "name": ""
         }
       ],
+      "outputs": [
+        {
+          "type": "bool",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "isParticipant",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
+      "constant": true,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
+      "payable": false,
       "inputs": [
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+          "type": "address",
+          "name": ""
         }
       ],
+      "outputs": [
+        {
+          "type": "bool",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "paid",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
+      "constant": true,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "paidCount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
+      "payable": false,
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "address",
+          "name": ""
         }
       ],
+      "outputs": [
+        {
+          "type": "bool",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
+      "name": "paidCount",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "type": "function",
       "name": "participants",
-      "outputs": [
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [
         {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
+          "type": "uint256",
+          "name": ""
         }
       ],
-      "stateMutability": "view",
-      "type": "function"
+      "outputs": [
+        {
+          "type": "address",
+          "name": ""
+        }
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "pay",
-      "outputs": [],
+      "constant": false,
       "stateMutability": "payable",
-      "type": "function"
+      "payable": true,
+      "inputs": [],
+      "outputs": []
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "splitAmount",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "uint256",
+          "name": ""
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "status",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "enum SplitBill.Status",
-          "name": "",
-          "type": "uint8"
+          "type": "uint8",
+          "name": ""
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "totalAmount",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "uint256",
+          "name": ""
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "totalCollected",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "uint256",
+          "name": ""
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "totalParticipants",
+      "constant": true,
+      "stateMutability": "view",
+      "payable": false,
+      "inputs": [],
       "outputs": [
         {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
+          "type": "uint256",
+          "name": ""
         }
-      ],
-      "stateMutability": "view",
-      "type": "function"
+      ]
     },
     {
-      "inputs": [],
+      "type": "function",
       "name": "withdrawSettled",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
+      "constant": false,
+      "payable": false,
+      "inputs": [],
+      "outputs": []
     },
     {
-      "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "stateMutability": "payable"
     }
   ]
 }
